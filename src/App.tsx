@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { 
-  TrendingUp, CheckCircle2, AlertTriangle, Clock, Coins, Users, 
+  TrendingUp, CheckCircle2, Clock, Coins, Users, 
   Layers, MessageSquare, Plus, Trash2, Check, RefreshCw, 
-  ChevronRight, Sliders, Calendar, Info, BarChart2, Briefcase, 
-  Activity, ArrowUpRight, HelpCircle, FileSpreadsheet, Edit3
+  ChevronRight, Sliders, Info, BarChart2, 
+  Activity, FileSpreadsheet, Edit3
 } from 'lucide-react';
+import { WeeklyTrendsChart } from './components/WeeklyTrendsChart';
 
 // Interfaces for State Management
 interface Task {
@@ -83,7 +84,7 @@ export default function App() {
   ]);
 
   // Pareto Chart Causes state
-  const [paretoCauses, setParetoCauses] = useState<ParetoItem[]>([
+  const [paretoCauses] = useState<ParetoItem[]>([
     { id: 'p1', cause: 'Emenda de fusão fora do padrão', occurrences: 18 },
     { id: 'p2', cause: 'Conector sujo ou danificado', occurrences: 11 },
     { id: 'p3', cause: 'ONT com defeito não identificado', occurrences: 7 },
@@ -163,7 +164,7 @@ export default function App() {
   ]);
 
   // Weekly failure checksheet
-  const [folhaDeVerificacao, setFolhaDeVerificacao] = useState([
+  const [folhaDeVerificacao] = useState([
     { cause: 'Emenda de fusão fora do padrão', w1: 4, w2: 5, w3: 4, w4: 5 },
     { cause: 'Conector sujo ou danificado', w1: 3, w2: 2, w3: 3, w4: 3 },
     { cause: 'ONT com defeito não identificado', w1: 2, w2: 2, w3: 1, w4: 2 },
@@ -714,6 +715,12 @@ export default function App() {
 
               </div>
 
+              {/* RECHARTS WEEKLY TRENDS: IFI ONLINE & RETRABALHO */}
+              <WeeklyTrendsChart 
+                selectedCoordinator={selectedCoordinator}
+                onCoordinatorChange={setSelectedCoordinator}
+              />
+
               {/* GRAPH GRID: COORDINATOR METRIC BARS */}
               <div className="border border-gray-200 rounded-2xl p-4 md:p-5">
                 <div className="flex flex-col md:flex-row md:items-center justify-between mb-4 border-b border-gray-100 pb-3 gap-2">
@@ -1068,7 +1075,7 @@ export default function App() {
                   <div className="space-y-3">
                     {(() => {
                       let cumulative = 0;
-                      return paretoCauses.map((item, idx) => {
+                      return paretoCauses.map((item) => {
                         cumulative += item.occurrences;
                         const individualPct = (item.occurrences / totalParetoOccurrences) * 100;
                         const cumulativePct = (cumulative / totalParetoOccurrences) * 100;
@@ -1162,7 +1169,7 @@ export default function App() {
                     })}
                   </div>
 
-                  <form onSubmit={handleAddGut} className="flex gap-2 mt-4 pt-3 border-t border-gray-100 flex-wrap md:flex-nowrap">
+                  <form onSubmit={handleAddGut} className="flex gap-2 mt-4 pt-3 border-t border-gray-100 flex-wrap md:flex-nowrap items-center">
                     <input 
                       type="text" 
                       placeholder="Adicionar novo problema à análise GUT..." 
@@ -1170,6 +1177,32 @@ export default function App() {
                       value={newGutProb}
                       onChange={(e) => setNewGutProb(e.target.value)}
                     />
+                    <div className="flex items-center gap-1.5 text-xs">
+                      <label className="text-[10px] font-bold text-gray-500">G:</label>
+                      <select 
+                        value={newGutG} 
+                        onChange={(e) => setNewGutG(Number(e.target.value))} 
+                        className="bg-white border border-gray-300 rounded p-1 text-xs outline-none"
+                      >
+                        {[1, 2, 3, 4, 5].map(v => <option key={v} value={v}>{v}</option>)}
+                      </select>
+                      <label className="text-[10px] font-bold text-gray-500">U:</label>
+                      <select 
+                        value={newGutU} 
+                        onChange={(e) => setNewGutU(Number(e.target.value))} 
+                        className="bg-white border border-gray-300 rounded p-1 text-xs outline-none"
+                      >
+                        {[1, 2, 3, 4, 5].map(v => <option key={v} value={v}>{v}</option>)}
+                      </select>
+                      <label className="text-[10px] font-bold text-gray-500">T:</label>
+                      <select 
+                        value={newGutT} 
+                        onChange={(e) => setNewGutT(Number(e.target.value))} 
+                        className="bg-white border border-gray-300 rounded p-1 text-xs outline-none"
+                      >
+                        {[1, 2, 3, 4, 5].map(v => <option key={v} value={v}>{v}</option>)}
+                      </select>
+                    </div>
                     <button type="submit" className="bg-[#660099] text-white px-4 py-2 rounded-lg font-bold text-xs uppercase shadow-sm cursor-pointer whitespace-nowrap">
                       + Inserir
                     </button>
